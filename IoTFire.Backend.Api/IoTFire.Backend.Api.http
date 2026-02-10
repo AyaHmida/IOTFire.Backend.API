@@ -1,0 +1,6 @@
+@IoTFire.Backend.Api_HostAddress = http://localhost:5167
+
+GET {{IoTFire.Backend.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
