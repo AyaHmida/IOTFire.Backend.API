@@ -1,0 +1,45 @@
+﻿using IoTFire.Backend.Api.Models.DTOs.Auth;
+using IoTFire.Backend.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace IoTFire.Backend.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(
+            IAuthService authService,
+            ILogger<AuthController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var response = await _authService.RegisterAsync(request);
+                return StatusCode(201, response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error during registration.");
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+    }
+}
