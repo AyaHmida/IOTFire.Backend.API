@@ -10,5 +10,11 @@ namespace IoTFire.Backend.Api.Repositories.Interfaces
         Task<User> CreateAsync(User user);
         Task<User> UpdateAsync(User user);
         Task<IEnumerable<User>> GetAllAsync();
+
+        Task<IEnumerable<User>> GetAllForAdminAsync();   
+        Task<IEnumerable<User>> GetPendingUsersAsync();
+        Task<IEnumerable<User>> GetActiveUsersAsync();   
+        Task<IEnumerable<User>> GetSuspendedUsersAsync(); 
+
     }
 }

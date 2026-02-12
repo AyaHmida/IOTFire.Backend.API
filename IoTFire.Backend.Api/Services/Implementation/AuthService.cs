@@ -55,7 +55,7 @@ namespace IoTFire.Backend.Api.Services.Implementation
                 PhoneNumber = request.PhoneNumber?.Trim(),
                 Role = request.Role,
                 ParentUserId = request.ParentUserId,
-                IsActive = true,
+                IsActive = false,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -96,8 +96,15 @@ namespace IoTFire.Backend.Api.Services.Implementation
                 return new AuthResponseDto
                 {
                     Success = false,
-                    Message = "Compte desactive."
+                    Message = "Votre compte est en attente de validation par un administrateur."
                 };
+            if (user.IsSuspended)
+                return new AuthResponseDto
+                {
+                    Success = false,
+                    Message = $"Votre compte a ete suspendu. Raison : {user.SuspensionReason}"
+                };
+
 
             var token = _jwtHelper.GenerateToken(user);
 
