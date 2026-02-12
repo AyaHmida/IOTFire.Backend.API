@@ -9,5 +9,6 @@ namespace IoTFire.Backend.Api.Repositories.Interfaces
         Task<User?> GetByIdAsync(int id);  
         Task<User> CreateAsync(User user);
         Task<User> UpdateAsync(User user);
+        Task<IEnumerable<User>> GetAllAsync();
     }
 }

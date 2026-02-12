@@ -6,5 +6,6 @@ namespace IoTFire.Backend.Api.Services.Interfaces
     {
        
         Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request);
+        Task<AuthResponseDto> LoginAsync(LoginDto dto);
     }
 }
