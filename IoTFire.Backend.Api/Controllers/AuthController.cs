@@ -41,5 +41,18 @@ namespace IoTFire.Backend.Api.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _authService.LoginAsync(dto);
+
+            return result.Success
+                ? Ok(result)
+                : Unauthorized(result);
+        }
+
     }
 }

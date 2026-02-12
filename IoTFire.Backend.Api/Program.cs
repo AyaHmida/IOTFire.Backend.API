@@ -1,9 +1,13 @@
 using IoTFire.Backend.Api.Data;
+using IoTFire.Backend.Api.Helpers;
 using IoTFire.Backend.Api.Repositories.Implementation;
 using IoTFire.Backend.Api.Repositories.Interfaces;
 using IoTFire.Backend.Api.Services.Implementation;
 using IoTFire.Backend.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //PostgrSQL
@@ -19,9 +23,33 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         }
     )
 );
-// Add services and repositories
+// Add services and repositories (Injection de dependances)
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<JwtHelper>();
+//configuration de jwt 
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtSettings["Key"];
+
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(secretKey)),
+        ClockSkew = TimeSpan.Zero 
+    };
+});
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -55,7 +83,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 //app.UseCors("AllowReactApp");
-
+app.UseAuthentication();       
 app.UseAuthorization();
 
 app.MapControllers();

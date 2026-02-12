@@ -10,13 +10,16 @@ namespace IoTFire.Backend.Api.Services.Implementation
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger<AuthService> _logger;
+        private readonly JwtHelper _jwtHelper;
 
         public AuthService(
-            IUserRepository userRepository,
+            IUserRepository userRepository, JwtHelper jwtHelper,
             ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _logger = logger;
+            _jwtHelper = jwtHelper;
+
         }
 
         public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -77,5 +80,46 @@ namespace IoTFire.Backend.Api.Services.Implementation
                 CreatedAt = createdUser.CreatedAt
             };
         }
+        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+        {
+            var user = await _userRepository.GetByEmailAsync(dto.Email);
+
+            if (user == null ||
+                !PasswordHelper.VerifyPassword(dto.Password, user.PasswordHash))
+                return new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Email ou mot de passe incorrect."
+                };
+
+            if (!user.IsActive)
+                return new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Compte desactive."
+                };
+
+            var token = _jwtHelper.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Success = true,
+                Message = "Connexion reussie.",
+                Token = token,
+                User = MapToDto(user)
+            };
+        }
+
+         private static UserDto MapToDto(User user) => new UserDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Role = user.Role.ToString()
+         };
     }
+
 }
+
+

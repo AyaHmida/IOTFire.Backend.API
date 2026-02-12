@@ -49,5 +49,9 @@ namespace IoTFire.Backend.Api.Repositories.Implementation
             await _context.SaveChangesAsync();
             return user;
         }
+        public async Task<IEnumerable<User>> GetAllAsync()
+            => await _context.Users.Where(u => u.IsActive).ToListAsync();
     }
+
 }
+
