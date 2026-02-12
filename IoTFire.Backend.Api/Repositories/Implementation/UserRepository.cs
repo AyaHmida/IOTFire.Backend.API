@@ -1,5 +1,6 @@
 ﻿using IoTFire.Backend.Api.Data;
 using IoTFire.Backend.Api.Models.Entities;
+using IoTFire.Backend.Api.Models.Entities.Enums;
 using IoTFire.Backend.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +52,27 @@ namespace IoTFire.Backend.Api.Repositories.Implementation
         }
         public async Task<IEnumerable<User>> GetAllAsync()
             => await _context.Users.Where(u => u.IsActive).ToListAsync();
+        public async Task<IEnumerable<User>> GetAllForAdminAsync()
+            => await _context.Users
+                .Where(u => !u.IsDeleted)
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+        public async Task<IEnumerable<User>> GetPendingUsersAsync()
+            => await _context.Users
+                .Where(u => !u.IsActive && !u.IsDeleted && u.Role != EnumRole.Admin)
+                .OrderBy(u => u.CreatedAt)
+                .ToListAsync();
+        public async Task<IEnumerable<User>> GetActiveUsersAsync()
+            => await _context.Users
+                .Where(u => u.IsActive && !u.IsSuspended && !u.IsDeleted)
+                .ToListAsync();
+
+        public async Task<IEnumerable<User>> GetSuspendedUsersAsync()
+            => await _context.Users
+                .Where(u => u.IsSuspended && !u.IsDeleted)
+                .ToListAsync();
+
+
     }
 
 }

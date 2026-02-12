@@ -27,6 +27,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<JwtHelper>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+
 //configuration de jwt 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
@@ -87,10 +89,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-//pour la creation auto-migration
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();  // Crée la DB + tables si elles n'existent pas
-}
+
 app.Run();

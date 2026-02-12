@@ -52,8 +52,15 @@ namespace IoTFire.Backend.Api.Models.Entities
         public DateTime? TokenExpiration { get; set; }
 
         [Column("is_active")]          // estActive → is_active
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = false;
+        [Column("is_suspended")]       
 
+        public bool IsSuspended { get; set; } = false;
+        [Column("suspend_reason")]
+        public string? SuspensionReason { get; set; }
+        [Column("is_deleted")]
+
+        public bool IsDeleted { get; set; } = false;
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
