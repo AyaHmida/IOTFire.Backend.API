@@ -3,6 +3,7 @@
     public enum EnumRole
     {
         Admin = 0,  
-        Occupant = 1   
+        Occupant = 1   ,
+        FamilyMember = 2
     }
 }
