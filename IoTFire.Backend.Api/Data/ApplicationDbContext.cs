@@ -37,6 +37,8 @@ namespace IoTFire.Backend.Api.Data
 
                 entity.Property(u => u.UpdatedAt)
                       .HasDefaultValueSql("NOW()");
+                entity.HasOne(u => u.ParentUser).WithMany(u => u.FamilyMembers).HasForeignKey(u => u.ParentUserId)
+                       .OnDelete(DeleteBehavior.Restrict).IsRequired(false);
             });
         }
     }

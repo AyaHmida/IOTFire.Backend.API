@@ -44,6 +44,8 @@ namespace IoTFire.Backend.Api.Models.Entities
         [ForeignKey("ParentUserId")]
         public User? ParentUser { get; set; }
 
+        public ICollection<User> FamilyMembers { get; set; } = new List<User>();
+
         [MaxLength(512)]
         [Column("reset_token")]
         public string? ResetToken { get; set; }
